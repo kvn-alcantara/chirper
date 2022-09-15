@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\Chirp;
-use Illuminate\Auth\Access\Response;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ChirpPolicy
@@ -13,10 +12,13 @@ class ChirpPolicy
 
     /**
      * Determine whether the user can view any models.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user): bool
+    public function viewAny(User $user)
     {
-        return auth()->check();
+        //
     }
 
     /**
@@ -33,10 +35,12 @@ class ChirpPolicy
 
     /**
      * Determine whether the user can create models.
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user): bool
+    public function create(User $user)
     {
-        return auth()->check();
+        //
     }
 
     /**
@@ -52,7 +56,7 @@ class ChirpPolicy
      */
     public function delete(User $user, Chirp $chirp): bool
     {
-        return $user->id === $chirp->user_id;
+        return $this->update($user, $chirp);
     }
 
     /**
