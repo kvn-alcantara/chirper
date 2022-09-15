@@ -1,11 +1,12 @@
 <script setup>
+import Pagination from "@/Shared/Pagination.vue";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Chirp from '@/Components/Chirp.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { useForm, Head } from '@inertiajs/inertia-vue3';
 
-defineProps(['chirps']);
+defineProps({chirps: Object});
     
 const form = useForm({
     message: '',
@@ -29,11 +30,13 @@ const form = useForm({
 
             <div class="mt-6 bg-white shadow-sm rounded-lg divide-y">
                 <Chirp
-                    v-for="chirp in chirps"
+                    v-for="chirp in chirps.data"
                     :key="chirp.id"
                     :chirp="chirp"
                 />
             </div>
+
+            <Pagination :links="chirps.links" class="mt-4" />
         </div>
     </AuthenticatedLayout>
 </template>
