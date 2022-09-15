@@ -14,7 +14,7 @@ class ChirpController extends Controller
     public function __construct()
     {
         $this->authorizeResource(Chirp::class, 'chirp', [
-            'except' => ['index', 'show', 'create', 'store', 'edit']
+            'except' => ['show', 'create', 'edit']
         ]);
     }
 
