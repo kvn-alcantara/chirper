@@ -49,14 +49,10 @@ class ChirpPolicy
 
     /**
      * Determine whether the user can delete the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Chirp  $chirp
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Chirp $chirp)
+    public function delete(User $user, Chirp $chirp): bool
     {
-        //
+        return $user->id === $chirp->user_id;
     }
 
     /**
