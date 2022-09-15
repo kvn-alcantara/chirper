@@ -4,16 +4,19 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Chirp;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\StoreChirpRequest;
+use Inertia\Response as InertiaResponse;
+use App\Http\Requests\UpdateChirpRequest;
 
 class ChirpController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function __construct()
+    {
+        $this->authorizeResource(Chirp::class, 'chirp');
+    }
+
+    public function index(): InertiaResponse
     {
         return Inertia::render('Chirps/Index', [
             'chirps' => Chirp::with('user:id,name')->latest()->get(),
@@ -30,20 +33,10 @@ class ChirpController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function store(StoreChirpRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'message' => 'required|string|max:255',
-        ]);
- 
-        $request->user()->chirps()->create($validated);
- 
+        $request->user()->chirps()->create($request->validated());
+
         return redirect(route('chirps.index'));
     }
 
@@ -69,16 +62,11 @@ class ChirpController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Chirp  $chirp
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Chirp $chirp)
+    public function update(UpdateChirpRequest $request, Chirp $chirp): RedirectResponse
     {
-        //
+        $chirp->update($request->validated());
+
+        return redirect(route('chirps.index'));
     }
 
     /**
