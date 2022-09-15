@@ -17,68 +17,59 @@ class ChirpTest extends TestCase
     /** @test */
     public function guests_cant_see_chirps()
     {
-        $response = $this->get(route('chirps.index'));
-
-        $response->assertRedirect(route('login'));
+        $this->get(route('chirps.index'))
+            ->assertRedirect(route('login'));
     }
 
     /** @test */
     public function users_can_see_chirps()
     {
-        $this->signIn();
-
-        $response = $this->get(route('chirps.index'));
-
-        $response->assertOk();
+        $this->signIn()
+            ->get(route('chirps.index'))
+            ->assertOk();
     }
 
     /** @test */
     public function guests_cant_create_chirps()
     {
-        $response = $this->post(route('chirps.store'), ['message' => 'Testing']);
-
-        $response->assertRedirect(route('login'));
+        $this->post(route('chirps.store'), ['message' => 'Testing'])
+            ->assertRedirect(route('login'));
     }
 
     /** @test */
-    public function a_user_can_only_update_his_chirps()
+    public function users_can_only_update_their_chirps()
     {
         $john = User::factory()->create();
         $jane = User::factory()->create();
         $chirp = Chirp::factory()->for($john)->create();
 
-        $this->signIn($jane);
-
-        $response = $this->patch(route('chirps.update', $chirp), ['message' => 'Testing']);
-
-        $response->assertForbidden();
+        $response = $this->signIn($jane)
+            ->patch(route('chirps.update', $chirp), ['message' => 'Testing'])
+            ->assertForbidden();
     }
 
     /** @test */
-    public function a_user_can_only_delete_his_chirps()
+    public function users_can_only_delete_their_chirps()
     {
         $john = User::factory()->create();
         $jane = User::factory()->create();
         $chirp = Chirp::factory()->for($john)->create();
 
-        $this->signIn($jane);
-
-        $response = $this->delete(route('chirps.destroy', $chirp));
-
-        $response->assertForbidden();
+        $this->signIn($jane)
+            ->delete(route('chirps.destroy', $chirp))
+            ->assertForbidden();
     }
 
     /** @test */
-    public function users_are_notified_of_new_chirps()
+    public function users_are_notified_when_another_one_creates_a_chirp()
     {
         Notification::fake();
 
         $john = User::factory()->create();
         $jane = User::factory()->create();
 
-        $this->signIn($john);
-
-        $this->post(route('chirps.store'), ['message' => 'Testing']);
+        $this->signIn($john)
+            ->post(route('chirps.store'), ['message' => 'Testing']);
 
         Notification::assertSentTo($jane, NewChirp::class);
     }
