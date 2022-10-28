@@ -1,76 +1,60 @@
 <?php
 
-namespace Tests\Feature\Chirp;
-
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Chirp;
+use App\Models\User;
 use App\Notifications\NewChirp;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 
-class ChirpTest extends TestCase
-{
-    use RefreshDatabase;
+uses(RefreshDatabase::class);
 
-    /** @test */
-    public function guests_cant_see_chirps()
-    {
-        $this->get(route('chirps.index'))
-            ->assertRedirect(route('login'));
-    }
+use function Pest\Laravel\get;
+use function Pest\Laravel\post;
 
-    /** @test */
-    public function users_can_see_chirps()
-    {
-        $this->signIn()
-            ->get(route('chirps.index'))
-            ->assertOk();
-    }
+test('guests cant see chirps', function () {
+    get(route('chirps.index'))
+        ->assertRedirect(route('login'));
+});
 
-    /** @test */
-    public function guests_cant_create_chirps()
-    {
-        $this->post(route('chirps.store'), ['message' => 'Testing'])
-            ->assertRedirect(route('login'));
-    }
+test('users can see chirps', function () {
+    signIn()
+        ->get(route('chirps.index'))
+        ->assertOk();
+});
 
-    /** @test */
-    public function users_can_only_update_their_chirps()
-    {
-        $john = User::factory()->create();
-        $jane = User::factory()->create();
-        $chirp = Chirp::factory()->for($john)->create();
+test('guests cannot create chirps', function () {
+    post(route('chirps.store'), ['message' => 'Pest is awesome'])
+        ->assertRedirect(route('login'));
+});
 
-        $response = $this->signIn($jane)
-            ->patch(route('chirps.update', $chirp), ['message' => 'Testing'])
-            ->assertForbidden();
-    }
+test('users can only update their chirps', function () {
+    $john = User::factory()->create();
+    $jane = User::factory()->create();
+    $chirp = Chirp::factory()->for($john)->create();
 
-    /** @test */
-    public function users_can_only_delete_their_chirps()
-    {
-        $john = User::factory()->create();
-        $jane = User::factory()->create();
-        $chirp = Chirp::factory()->for($john)->create();
+    signIn($jane)
+        ->patch(route('chirps.update', $chirp), ['message' => 'Pest is awesome'])
+        ->assertForbidden();
+});
 
-        $this->signIn($jane)
-            ->delete(route('chirps.destroy', $chirp))
-            ->assertForbidden();
-    }
+test('users can only delete their chirps', function () {
+    $john = User::factory()->create();
+    $jane = User::factory()->create();
+    $chirp = Chirp::factory()->for($john)->create();
 
-    /** @test */
-    public function users_are_notified_when_another_one_creates_a_chirp()
-    {
-        Notification::fake();
+    signIn($jane)
+        ->delete(route('chirps.destroy', $chirp))
+        ->assertForbidden();
+});
 
-        $john = User::factory()->create();
-        $jane = User::factory()->create();
+test('users are notified when another one creates a chirp', function () {
+    Notification::fake();
 
-        $this->signIn($john)
-            ->post(route('chirps.store'), ['message' => 'Testing']);
+    $john = User::factory()->create();
+    $jane = User::factory()->create();
 
-        Notification::assertSentTo($jane, NewChirp::class);
-    }
-}
+    signIn($john)
+        ->post(route('chirps.store'), ['message' => 'Pest is awesome']);
+
+    Notification::assertSentTo($jane, NewChirp::class);
+});
