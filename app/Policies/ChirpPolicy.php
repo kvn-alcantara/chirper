@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Chirp;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ChirpPolicy
@@ -16,18 +16,6 @@ class ChirpPolicy
     public function viewAny(User $user): bool
     {
         return auth()->check();
-    }
-
-    /**
-     * Determine whether the user can view the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Chirp  $chirp
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function view(User $user, Chirp $chirp)
-    {
-        //
     }
 
     /**
@@ -52,29 +40,5 @@ class ChirpPolicy
     public function delete(User $user, Chirp $chirp): bool
     {
         return $this->update($user, $chirp);
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Chirp  $chirp
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function restore(User $user, Chirp $chirp)
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Chirp  $chirp
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function forceDelete(User $user, Chirp $chirp)
-    {
-        //
     }
 }

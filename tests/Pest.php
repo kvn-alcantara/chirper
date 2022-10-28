@@ -11,6 +11,10 @@
 |
 */
 
+use App\Models\User;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Tests\TestCase;
+
 uses(Tests\TestCase::class)->in('Feature');
 
 /*
@@ -42,4 +46,12 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * Set the currently logged-in user for the application.
+ */
+function signIn(Authenticatable $user = null): TestCase
+{
+    return test()->actingAs($user ?? User::factory()->create());
 }
