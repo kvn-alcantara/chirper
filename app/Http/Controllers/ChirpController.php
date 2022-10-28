@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
+use App\Http\Requests\StoreChirpRequest;
+use App\Http\Requests\UpdateChirpRequest;
 use App\Models\Chirp;
 use Illuminate\Http\RedirectResponse;
-use App\Http\Requests\StoreChirpRequest;
+use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
-use App\Http\Requests\UpdateChirpRequest;
 
 class ChirpController extends Controller
 {
     public function __construct()
     {
         $this->authorizeResource(Chirp::class, 'chirp', [
-            'except' => ['show', 'create', 'edit']
+            'except' => ['show', 'create', 'edit'],
         ]);
     }
 
@@ -25,43 +25,11 @@ class ChirpController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
     public function store(StoreChirpRequest $request): RedirectResponse
     {
         $request->user()->chirps()->create($request->validated());
 
         return redirect(route('chirps.index'));
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Chirp  $chirp
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Chirp $chirp)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Chirp  $chirp
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Chirp $chirp)
-    {
-        //
     }
 
     public function update(UpdateChirpRequest $request, Chirp $chirp): RedirectResponse
